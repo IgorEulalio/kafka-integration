@@ -14,16 +14,21 @@ import javax.validation.Valid;
 
 import static com.study.kafka.configuration.KafkaSetup.runProducer;
 
-@RestController
-public class studyController {
+@RestController("/students")
+public class studentController {
 
-    @PostMapping(value = "/student", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public static ResponseEntity createStudent(@RequestBody @Valid Student student){
         try {
             runProducer(student);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public static ResponseEntity getStudents(){
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

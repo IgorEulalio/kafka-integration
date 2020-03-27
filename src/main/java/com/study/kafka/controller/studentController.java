@@ -1,7 +1,6 @@
 package com.study.kafka.controller;
 
 import com.study.kafka.controller.model.Student;
-import org.apache.kafka.common.requests.AbstractResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +13,10 @@ import javax.validation.Valid;
 
 import static com.study.kafka.configuration.KafkaSetup.runProducer;
 
-@RestController("/students")
+@RestController()
 public class studentController {
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value="/students", consumes = MediaType.APPLICATION_JSON_VALUE)
     public static ResponseEntity createStudent(@RequestBody @Valid Student student){
         try {
             runProducer(student);
@@ -29,6 +28,7 @@ public class studentController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public static ResponseEntity getStudents(){
+
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

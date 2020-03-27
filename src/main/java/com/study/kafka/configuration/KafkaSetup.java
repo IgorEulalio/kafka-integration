@@ -1,9 +1,12 @@
 package com.study.kafka.configuration;
 import com.study.kafka.controller.model.Student;
+import org.apache.kafka.clients.consumer.Consumer;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import java.util.Properties;
+
 
 public class KafkaSetup {
 

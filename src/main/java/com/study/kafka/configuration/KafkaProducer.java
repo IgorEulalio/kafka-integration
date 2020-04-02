@@ -5,10 +5,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
+
+import java.util.Random;
+import java.util.UUID;
 
 @Service
 public class KafkaProducer {
@@ -22,13 +29,22 @@ public class KafkaProducer {
     private String topic;
 
     public void send(Student data) {
-        LOG.info("Enviando JSON='{}' para o tópico='{}'", data, topic);
+        ListenableFuture<SendResult<String, Student>> future =
+                kafkaTemplate.send(topic, String.valueOf(UUID.randomUUID()), data);
 
-        Message<Student> message = MessageBuilder
-                .withPayload(data)
-                .setHeader(KafkaHeaders.TOPIC, topic)
-                .build();
+        future.addCallback(new ListenableFutureCallback<SendResult<String, Student>>() {
 
-        kafkaTemplate.send(message);
+            @Override
+            public void onSuccess(SendResult<String, Student> result) {
+                LOG.info("Enviado o aluno {} para a o topico {} e na partição {}", data.toString(), result.getRecordMetadata().topic(), result.getRecordMetadata().partition());
+            }
+            @Override
+            public void onFailure(Throwable ex) {
+                System.out.println("Unable to send message=["
+                        + data.toString() + "] due to : " + ex.getMessage());
+            }
+        });
+
+
     }
 }

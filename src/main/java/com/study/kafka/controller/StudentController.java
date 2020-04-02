@@ -26,7 +26,6 @@ public class StudentController {
 
     @PostMapping(value="/students", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity createStudent(@RequestBody @Valid Student student){
-
         //Enviando a mensagem para um tópico.
         producer.send(student);
         return ResponseEntity.status(HttpStatus.OK).build();

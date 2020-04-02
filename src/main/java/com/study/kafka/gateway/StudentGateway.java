@@ -7,6 +7,6 @@ import java.util.List;
 public interface StudentGateway {
     List<Student> getStudents();
     void addStudent(Student student);
-    Student getStudentById();
+    Student getStudentById(int id);
 
 }

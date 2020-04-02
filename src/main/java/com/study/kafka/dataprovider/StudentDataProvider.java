@@ -21,7 +21,7 @@ public class StudentDataProvider implements StudentGateway {
     }
 
     @Override
-    public Student getStudentById() {
-        return null;
+    public Student getStudentById(int id) {
+        return students.stream().filter(st -> st.getId() == id).findFirst().get();
     }
 }

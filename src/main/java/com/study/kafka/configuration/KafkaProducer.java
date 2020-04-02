@@ -1,4 +1,5 @@
 package com.study.kafka.configuration;
+import com.study.kafka.controller.model.Score;
 import com.study.kafka.controller.model.Student;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +24,21 @@ public class KafkaProducer {
     private static final Logger LOG = LoggerFactory.getLogger(Student.class);
 
     @Autowired
-    private KafkaTemplate<String, Student> kafkaTemplate;
+    private KafkaTemplate<String, Student> kafkaTemplateStudent;
 
-    @Value("${topico-kafka}")
-    private String topic;
+    @Autowired
+    private KafkaTemplate<String, Score> kafkaTemplateScore;
+
+    @Value("${student-topic}")
+    private String studentTopic;
+
+    @Value("${score-topic}")
+    private String scoreTopic;
 
     public void send(Student data) {
+
         ListenableFuture<SendResult<String, Student>> future =
-                kafkaTemplate.send(topic, String.valueOf(UUID.randomUUID()), data);
+                kafkaTemplateStudent.send(studentTopic, String.valueOf(UUID.randomUUID()), data);
 
         future.addCallback(new ListenableFutureCallback<SendResult<String, Student>>() {
 
@@ -44,7 +52,24 @@ public class KafkaProducer {
                         + data.toString() + "] due to : " + ex.getMessage());
             }
         });
+    }
 
+    public void send(Score score) {
 
+        ListenableFuture<SendResult<String, Score>> future =
+                kafkaTemplateScore.send(scoreTopic, String.valueOf(UUID.randomUUID()), score);
+
+        future.addCallback(new ListenableFutureCallback<SendResult<String, Score>>() {
+
+            @Override
+            public void onSuccess(SendResult<String, Score> result) {
+                LOG.info("Enviado o aluno {} para a o topico {} e na partição {}", score.toString(), result.getRecordMetadata().topic(), result.getRecordMetadata().partition());
+            }
+            @Override
+            public void onFailure(Throwable ex) {
+                System.out.println("Unable to send message=["
+                        + score.toString() + "] due to : " + ex.getMessage());
+            }
+        });
     }
 }

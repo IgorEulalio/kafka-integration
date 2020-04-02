@@ -1,6 +1,6 @@
-package com.study.kafka;
+package com.study.kafka.configuration;
 
-import com.study.kafka.configuration.KafkaConsumer;
+import com.study.kafka.controller.model.Score;
 import com.study.kafka.controller.model.Student;
 import com.study.kafka.dataprovider.StudentDataProvider;
 import org.slf4j.Logger;
@@ -10,16 +10,16 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ConsumerApplication {
+public class KafkaConsumerScore {
 
     private static final Logger LOG = LoggerFactory.getLogger(Student.class);
 
     @Autowired
     private StudentDataProvider studentData;
 
-    @KafkaListener(topics = "${topico-kafka}", groupId = "json")
-    public void receive(Student data) {
-        LOG.info("Recebido aluno {} no controller {}", data.getName(), KafkaConsumer.class.getSimpleName());
-        studentData.addStudent(data);
+    @KafkaListener(topics = "${score-topic}", groupId = "json")
+    public void receive(Score score) {
+        LOG.info("Recebido notas do aluno de id {} no topico {} as notas serão inseridas nas informações do aluno.", score.getStudentId(), "SCORE_TOPIC");
+        studentData.addScore(score);
     }
 }

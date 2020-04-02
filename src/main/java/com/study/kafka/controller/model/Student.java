@@ -1,15 +1,21 @@
 package com.study.kafka.controller.model;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.concurrent.atomic.AtomicInteger;
 
+@Valid
 public class Student {
 
     private int id;
     private String name;
     private int age;
+    private Score score;
 
     public Student(){
     }
+
+    private static final AtomicInteger count = new AtomicInteger(1);
 
     public int getId() {
         return id;
@@ -23,10 +29,13 @@ public class Student {
         return age;
     }
 
-    public Student(@NotNull int id, @NotNull String name, @NotNull int age) {
-        this.id = id;
+    public Score getScore() { return score; }
+
+    public Student(@NotNull int id, @NotNull String name, @NotNull int age, Score score) {
+        this.id = count.incrementAndGet();
         this.name = name;
         this.age = age;
+        this.score = score;
     }
 
     @Override
@@ -49,4 +58,6 @@ public class Student {
     public void setAge(int age) {
         this.age = age;
     }
+
+    public void setScore(Score score) {this.score = score; };
 }

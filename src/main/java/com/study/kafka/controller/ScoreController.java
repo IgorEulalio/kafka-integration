@@ -1,7 +1,7 @@
 package com.study.kafka.controller;
 
 import com.study.kafka.configuration.KafkaProducer;
-import com.study.kafka.controller.model.Student;
+import com.study.kafka.controller.model.Score;
 import com.study.kafka.dataprovider.StudentDataProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,26 +12,26 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-@RequestMapping("/students")
+@RequestMapping("/scores")
 @RestController
-public class StudentController {
+public class ScoreController {
 
     @Autowired
     private KafkaProducer producer;
 
     @Autowired
-    private StudentDataProvider studentDataProvider;
+    StudentDataProvider studentData;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity createStudent(@RequestBody @Valid Student student){
-        //Enviando a mensagem para um tópico.
-        producer.send(student);
+    public ResponseEntity addScore(@RequestBody @Valid Score score) {
+        producer.send(score);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Student>> getStudents(){
-        //O próprio tópico está incrementando o estudante dentro da fila
-        return ResponseEntity.ok().body(studentDataProvider.getStudents());
+    public ResponseEntity<List<Score>> getScores() {
+
+        return ResponseEntity.ok().body(studentData.getScores());
     }
+
 }

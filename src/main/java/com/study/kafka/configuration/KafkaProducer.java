@@ -1,50 +1,46 @@
 package com.study.kafka.configuration;
-import com.study.kafka.controller.model.Score;
-import com.study.kafka.controller.model.Student;
+
+import com.study.kafka.controller.model.Order;
+import com.study.kafka.controller.model.Payment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.messaging.Message;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
-import java.util.Random;
 import java.util.UUID;
 
 @Service
 public class KafkaProducer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Student.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Order.class);
 
     @Autowired
-    private KafkaTemplate<String, Student> kafkaTemplateStudent;
+    private KafkaTemplate<String, Order> kafkaTemplateOrder;
 
     @Autowired
-    private KafkaTemplate<String, Score> kafkaTemplateScore;
+    private KafkaTemplate<String, Payment> kafkaTemplatePayment;
 
-    @Value("${student-topic}")
-    private String studentTopic;
+    @Value("${order-topic}")
+    private String orderTopic;
 
-    @Value("${score-topic}")
-    private String scoreTopic;
+    @Value("${payment-topic}")
+    private String paymentTopic;
 
-    public void send(Student data) {
+    public void send(Order data) {
 
-        ListenableFuture<SendResult<String, Student>> future =
-                kafkaTemplateStudent.send(studentTopic, String.valueOf(UUID.randomUUID()), data);
+        ListenableFuture<SendResult<String, Order>> future =
+                kafkaTemplateOrder.send(orderTopic, String.valueOf(UUID.randomUUID()), data);
 
-        future.addCallback(new ListenableFutureCallback<SendResult<String, Student>>() {
+        future.addCallback(new ListenableFutureCallback<SendResult<String, Order>>() {
 
             @Override
-            public void onSuccess(SendResult<String, Student> result) {
-                LOG.info("Enviado o aluno {} para a o topico {} e na partição {}", data.toString(), result.getRecordMetadata().topic(), result.getRecordMetadata().partition());
+            public void onSuccess(SendResult<String, Order> result) {
+                LOG.info("Enviado a compra: {} para a o topico {} e na partição {}", data.getDescription(), result.getRecordMetadata().topic(), result.getRecordMetadata().partition());
             }
             @Override
             public void onFailure(Throwable ex) {
@@ -54,21 +50,21 @@ public class KafkaProducer {
         });
     }
 
-    public void send(Score score) {
+    public void send(Payment payment) {
 
-        ListenableFuture<SendResult<String, Score>> future =
-                kafkaTemplateScore.send(scoreTopic, String.valueOf(UUID.randomUUID()), score);
+        ListenableFuture<SendResult<String, Payment>> future =
+                kafkaTemplatePayment.send(paymentTopic, String.valueOf(UUID.randomUUID()), payment);
 
-        future.addCallback(new ListenableFutureCallback<SendResult<String, Score>>() {
+        future.addCallback(new ListenableFutureCallback<SendResult<String, Payment>>() {
 
             @Override
-            public void onSuccess(SendResult<String, Score> result) {
-                LOG.info("Enviado o aluno {} para a o topico {} e na partição {}", score.toString(), result.getRecordMetadata().topic(), result.getRecordMetadata().partition());
+            public void onSuccess(SendResult<String, Payment> result) {
+                LOG.info("Enviado o pagamento: {} para a o topico {} e na partição {}", payment.toString(), result.getRecordMetadata().topic(), result.getRecordMetadata().partition());
             }
             @Override
             public void onFailure(Throwable ex) {
                 System.out.println("Unable to send message=["
-                        + score.toString() + "] due to : " + ex.getMessage());
+                        + payment.toString() + "] due to : " + ex.getMessage());
             }
         });
     }

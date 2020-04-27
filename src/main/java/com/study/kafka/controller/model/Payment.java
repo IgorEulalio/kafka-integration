@@ -13,15 +13,16 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Valid
-public class Score {
+public class Payment {
+
+    @JsonProperty("order_id")
+    @NotNull
+    private int orderId;
 
     @NotNull
-    private int id;
+    @JsonProperty("credit_card")
+    private int creditCard;
 
-    @JsonProperty("student_id")
-    @NotNull
-    private int studentId;
-
-    @NotNull
-    private int points;
+    @JsonProperty("fraud")
+    private boolean isFraud;
 }
